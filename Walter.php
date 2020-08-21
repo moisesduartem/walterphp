@@ -29,10 +29,10 @@ class Walter
         $this->setFilePath($this->path . $view . '.php');
         /* Recebendo o conteúdo HTML do diretório como string. */
         $this->setHtmlFile(file_get_contents($this->filePath));
-        /* Percorre o array de dados */
-        $this->checkDataOnFile($data);
         /* Procura comandos no arquivo */
         $this->searchCommandsOnFile();
+        /* Percorre o array de dados */
+        $this->checkDataOnFile($data);
         /**
          * Exibe a saída em HTML da string contendo a página/view.
          */
@@ -47,22 +47,32 @@ class Walter
             $dollarExp = '/\$' .$key .'/';
             /* Expressão regular que busca '{{ nomeDaVariavelNoArray }}' */
             $mustacheExp = '/\{\{.+' .$key .'.+\}\}/';
-            /* Se existir no arquivo substitui na variavel $htmlFile */ 
-            if (preg_match($dollarExp, $this->getHtmlFile()))
-            $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
-            if (preg_match($mustacheExp, $this->getHtmlFile()))
-            $this->replaceDataOnFile($mustacheExp, $value, $this->getHtmlFile());
+            /* Se for uma string */
+            if (gettype($data[$key]) == 'string'):
+                /* Se existir no arquivo substitui na variavel $htmlFile */ 
+                if (preg_match($dollarExp, $this->getHtmlFile()))
+                $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
+                if (preg_match($mustacheExp, $this->getHtmlFile()))
+                $this->replaceDataOnFile($mustacheExp, $value, $this->getHtmlFile());
+            endif;
         endforeach;
     }
 
     private function searchCommandsOnFile()
     {
-        // $forExp = '/for.+\(.+\)\:.+endfor/';
-        // $percentExp = '/\%.+\%/';
-        // if (preg_match($percentExp, $this->getHtmlFile()))
-        //     echo preg_match_all($percentExp, $this->getHtmlFile());
+        // $forExp = '/\[.+for.+]/';
+        // $matches = [];
+        // if (preg_match($forExp, $this->getHtmlFile())):
+        //     preg_match_all($forExp, $this->getHtmlFile(), $matches);
+        //     foreach ($matches as $key => $value):
+        //         // $arr = [];
+        //         // echo preg_match_all('', $matches[$key][0]);
+        //     endforeach;
+        // endif;
+
+        // print_r($matches);
         // echo preg_replace($forExp, $value, $this->getHtmlFile);
-            // $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
+        //     $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
     }
 
     /**
