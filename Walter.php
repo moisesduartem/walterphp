@@ -31,6 +31,8 @@ class Walter
         $this->setHtmlFile(file_get_contents($this->filePath));
         /* Percorre o array de dados */
         $this->checkDataOnFile($data);
+        /* Procura comandos no arquivo */
+        $this->searchCommandsOnFile();
         /**
          * Exibe a saída em HTML da string contendo a página/view.
          */
@@ -42,11 +44,25 @@ class Walter
     {
         foreach ($data as $key => $value):
             /* Expressão regular que busca '$nomeDaVariavelNoArray' */
-            $exp = '/\$' .$key .'/';
+            $dollarExp = '/\$' .$key .'/';
+            /* Expressão regular que busca '{{ nomeDaVariavelNoArray }}' */
+            $mustacheExp = '/\{\{.+' .$key .'.+\}\}/';
             /* Se existir no arquivo substitui na variavel $htmlFile */ 
-            if (preg_match($exp, $this->getHtmlFile()))
-                $this->replaceDataOnFile($exp, $value, $this->getHtmlFile());
+            if (preg_match($dollarExp, $this->getHtmlFile()))
+            $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
+            if (preg_match($mustacheExp, $this->getHtmlFile()))
+            $this->replaceDataOnFile($mustacheExp, $value, $this->getHtmlFile());
         endforeach;
+    }
+
+    private function searchCommandsOnFile()
+    {
+        // $forExp = '/for.+\(.+\)\:.+endfor/';
+        // $percentExp = '/\%.+\%/';
+        // if (preg_match($percentExp, $this->getHtmlFile()))
+        //     echo preg_match_all($percentExp, $this->getHtmlFile());
+        // echo preg_replace($forExp, $value, $this->getHtmlFile);
+            // $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
     }
 
     /**
