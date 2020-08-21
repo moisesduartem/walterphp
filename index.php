@@ -4,15 +4,15 @@
  */
 require __DIR__ . '/Walter.php';
 
-$view = new Walter('examples/');
+$view = new Walter('views/');
 
 $year = date('Y');
 
-$view->render('index', [
+$view->render('home', [
     'name' => 'Moisés', 
     'movie' => 'Harry Potter', 
     'fullName' => 'Moisés Mariano Duarte Maia',
     'year' => $year
-    ]);
+]);
 
 ?>
