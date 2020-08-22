@@ -14,6 +14,7 @@ class Walter
     private string $path;
     private string $filePath;
     private string $htmlFile;
+    private array $data;
 
     public function __construct(string $path) {
         $this->path = $path;
@@ -25,6 +26,7 @@ class Walter
      */
     public function render(string $view, array $data = []): string
     {
+        $this->setData($data);
         /* Seta diretório 'path/arquivo.php'. */
         $this->setFilePath($this->path . $view . '.php');
         /* Recebendo o conteúdo HTML do diretório como string. */
@@ -51,28 +53,44 @@ class Walter
             if (gettype($data[$key]) == 'string'):
                 /* Se existir no arquivo substitui na variavel $htmlFile */ 
                 if (preg_match($dollarExp, $this->getHtmlFile()))
-                $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
+                    $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
                 if (preg_match($mustacheExp, $this->getHtmlFile()))
-                $this->replaceDataOnFile($mustacheExp, $value, $this->getHtmlFile());
+                    $this->replaceDataOnFile($mustacheExp, $value, $this->getHtmlFile());
             endif;
         endforeach;
     }
 
     private function searchCommandsOnFile()
     {
-        // $forExp = '/\[.+for.+]/';
-        // $matches = [];
-        // if (preg_match($forExp, $this->getHtmlFile())):
-        //     preg_match_all($forExp, $this->getHtmlFile(), $matches);
-        //     foreach ($matches as $key => $value):
-        //         // $arr = [];
-        //         // echo preg_match_all('', $matches[$key][0]);
-        //     endforeach;
-        // endif;
+        $cmdExp = '/{\%.+\%\}/';
+        if ($cmdsFound = preg_match_all($cmdExp, $this->getHtmlFile()) > 0):
+            $this->inheritanceFunc();
+        endif;
+    }
+    /**
+     * Verifica se existe a função de herança.
+     * @return string $HTMLReposition
+     */
+    private function inheritanceFunc(): string
+    {
+        $HTMLReposition = '';
 
-        // print_r($matches);
-        // echo preg_replace($forExp, $value, $this->getHtmlFile);
-        //     $this->replaceDataOnFile($dollarExp, $value, $this->getHtmlFile());
+        $inhExp = '/{\%.+extends.+\%\}/';
+        $extendsDeclaration = [];
+        if ($haveExtends = preg_match($inhExp, $this->getHtmlFile(), $extendsDeclaration)):
+            $extendsWithoutKeys = substr($extendsDeclaration[0], 2, strlen($extendsDeclaration[0]) - 4);
+            $parentFileWithQM = trim(str_replace('extends', '', $extendsWithoutKeys));
+            $parentFileName = substr($parentFileWithQM, 1, strlen($parentFileWithQM) -2);
+            $childrenContent = str_replace($extendsDeclaration[0], '', $this->getHtmlFile());
+            
+            if (file_exists($this->path . $parentFileName)):
+                $parentFileContent = file_get_contents($this->path . $parentFileName);
+                $HTMLReposition = preg_replace('/{\%.+children.+\%\}/', $childrenContent, $parentFileContent);
+                $this->setHtmlFile($HTMLReposition);
+            endif;
+        endif;
+
+        return $HTMLReposition;
     }
 
     /**
@@ -90,6 +108,24 @@ class Walter
      *| GETTERS & SETTERS  |
      *|____________________|
      */
+
+    /**  
+     * @param array $data
+     * @return array $this->data
+     */
+    private function setData(array $data): array
+    {   
+        $this->data = $data;
+        return $this->data;
+    }
+    
+    /**
+     * @return array $this->data
+     */
+    private function getData(): array
+    {   
+        return $this->data;
+    }
 
     /**  
      * @param string $filePath
