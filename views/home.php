@@ -16,8 +16,8 @@
         display: flex;
         flex-direction: column;
     }
-    #links {
-        margin: 20px;
+    .link {
+        margin: 3px 20px;
         padding: 20px;
         border: 1px solid #00000088;
     }
@@ -28,9 +28,11 @@
 
     <div id="container">
         <h2>Walter - PHP Template Engine</h2>
-        <div id="links">
-
+        <div class="link">
         <a href="examples/variables.php">Variáveis</a>
+        </div>
+        <div class="link">
+        <a href="examples/inheritance.php">Herança</a>
         </div>
 
         <small><a href="http://github.com/moisesduartem/walterphp">http://github.com/moisesduartem/walterphp</a> | $year - $fullName</small>
