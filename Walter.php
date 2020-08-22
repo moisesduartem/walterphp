@@ -80,11 +80,10 @@ class Walter
         if ($haveExtends = preg_match($inhExp, $this->getHtmlFile(), $extendsDeclaration)):
             $extendsWithoutKeys = substr($extendsDeclaration[0], 2, strlen($extendsDeclaration[0]) - 4);
             $parentFileWithQM = trim(str_replace('extends', '', $extendsWithoutKeys));
-            $parentFileName = substr($parentFileWithQM, 1, strlen($parentFileWithQM) -2);
+            $parentFilePath = __DIR__ . '/' . substr($parentFileWithQM, 1, strlen($parentFileWithQM) -2);
             $childrenContent = str_replace($extendsDeclaration[0], '', $this->getHtmlFile());
-            
-            if (file_exists($this->path . $parentFileName)):
-                $parentFileContent = file_get_contents($this->path . $parentFileName);
+            if (file_exists($parentFilePath)):
+                $parentFileContent = file_get_contents($parentFilePath);
                 $HTMLReposition = preg_replace('/{\%.+children.+\%\}/', $childrenContent, $parentFileContent);
                 $this->setHtmlFile($HTMLReposition);
             endif;
