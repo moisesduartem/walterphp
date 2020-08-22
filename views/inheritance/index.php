@@ -1,4 +1,4 @@
-{% extends 'parent.php' %}
+{% extends 'views/inheritance/parent.php' %}
 
 <div id="container">
         <h3>Filme: {{ movie }}</h3>
